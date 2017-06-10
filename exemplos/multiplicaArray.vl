@@ -1,0 +1,20 @@
+DECLARE
+	INT i
+	ARRAY 5 a
+BEGIN
+	FOR i IN a
+		PRINT "Introduza um numero inteiro: "
+		a[i] = READINT
+	ENDFOR
+
+
+	FOR i IN a
+		a[i] = a[i] * 2
+	ENDFOR	
+
+
+	FOR i IN a
+		PRINT a[i]
+		PRINT " "
+	ENDFOR
+END

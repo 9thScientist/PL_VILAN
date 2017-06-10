@@ -1,0 +1,18 @@
+DECLARE
+	INT x
+	INT y
+BEGIN
+	PRINT "Introduza um numero inteiro: "
+	x = READINT
+	PRINT "Introduza um numero inteiro: "
+	y = READINT
+
+	// Calcula qual o maior valor
+	IF y > x THEN
+		PRINT "O maior e: "
+		PRINT y
+	ELSE
+		PRINT "O maior e: "
+		PRINT x
+	ENDIF
+END

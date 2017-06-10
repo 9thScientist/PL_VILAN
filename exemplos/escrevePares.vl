@@ -1,0 +1,13 @@
+DECLARE
+	INT i
+	INT n
+BEGIN
+	PRINT "Parar em que número? "
+	n = READINT
+	PRINT "\n"
+
+	FOR i TO n STEP 2
+		PRINT i
+		PRINT "\n"
+	ENDFOR
+END

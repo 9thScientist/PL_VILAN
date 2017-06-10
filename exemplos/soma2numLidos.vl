@@ -1,0 +1,12 @@
+DECLARE
+	INT x
+	INT y
+BEGIN
+	PRINT "Introduza um numero inteiro: "
+	x = READINT
+	PRINT "Introduza um numero inteiro: "
+	y = READINT
+
+	PRINT "A soma e: "
+	PRINT x + y
+END

@@ -1,0 +1,9 @@
+DECLARE
+	INT i
+	ARRAY 4 v = [1, 2, 3, 4]
+BEGIN
+	FOR i IN v
+		PRINT v[i]
+		PRINT " "
+	ENDFOR
+END

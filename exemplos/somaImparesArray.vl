@@ -1,0 +1,13 @@
+DECLARE
+	INT i = 1
+	INT soma
+	ARRAY 5 v	
+BEGIN
+	FOR i IN v STEP 2
+		v[i] = READINT
+		soma = soma + v[i]
+	ENDFOR
+
+	PRINT "A soma da lista e: "
+	PRINT soma
+END
