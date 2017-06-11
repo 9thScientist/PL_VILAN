@@ -1,10 +1,10 @@
 DECLARE
 	INT i
 	INT soma
-	ARRAY 5 v	
+	ARRAY 5 v
 BEGIN
 	FOR i IN v
-		v[i] = READINT
+		v[i] = READ
 		soma = soma + v[i]
 	ENDFOR
 

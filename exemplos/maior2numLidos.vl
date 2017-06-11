@@ -3,9 +3,9 @@ DECLARE
 	INT y
 BEGIN
 	PRINT "Introduza um numero inteiro: "
-	x = READINT
+	x = READ
 	PRINT "Introduza um numero inteiro: "
-	y = READINT
+	y = READ
 
 	// Calcula qual o maior valor
 	IF y > x THEN

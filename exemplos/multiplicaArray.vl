@@ -4,13 +4,13 @@ DECLARE
 BEGIN
 	FOR i IN a
 		PRINT "Introduza um numero inteiro: "
-		a[i] = READINT
+		a[i] = READ
 	ENDFOR
 
 
 	FOR i IN a
 		a[i] = a[i] * 2
-	ENDFOR	
+	ENDFOR
 
 
 	FOR i IN a

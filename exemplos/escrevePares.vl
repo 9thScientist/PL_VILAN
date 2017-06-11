@@ -3,7 +3,7 @@ DECLARE
 	INT n
 BEGIN
 	PRINT "Parar em que número? "
-	n = READINT
+	n = READ
 	PRINT "\n"
 
 	FOR i TO n STEP 2
