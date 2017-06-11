@@ -9,45 +9,49 @@ int yylex();
 %type <s> STR
 %type <var> VAR
 %type <i> NUM
-%type <i> numval 
+%type <i> numval
 %type <i> assign
 %type <i> list
 %type <s> OPB
+
+%left '*' '+' '-' '/'
+%left OPB
 %%
-vilan: DECLARE dec BEGN code END
+vilan: DECLARE dec BEGN code END { printf ("Done.\n"); }
      ;
 
 dec: initvar dec
    |
    ;
 
-initvar: INT VAR		{ printf("INT %s\n", $2.name); }
+initvar: INT VAR        {  }
        | ARRAY NUM VAR
        ;
 
-code: assign code 
+code: assign code
     | for code
     | if code
-    | PRINT STR code
-    | 
+    | PRINT STR code          {  }
+    | PRINT numval code       {  }
+    |
     ;
 
-assign: VAR '=' assign		{ $$ = $1.value; }
-      | VAR '=' list		{ $$ = $1.value; } 
-      | VAR '=' READ		{ $$ = $1.value; }
+assign: VAR '=' assign        { $$ = $1.value; }
+      | VAR '=' list        { $$ = $1.value; }
+      | VAR '=' READ        { $$ = $1.value; }
       | numval
       ;
 
-numval: '(' numval '+' numval ')' { $$ = $2; }
-      | '(' numval '-' numval ')' { $$ = $2; }
-      | '(' numval '*' numval ')' { $$ = $2; }
-      | '(' numval '/' numval ')' { $$ = $2; }
-      | '(' numval ')'		{ $$ = $2; }
+numval: numval '+' numval  { $$ = $1; }
+      | numval '-' numval  { $$ = $1; }
+      | numval '*' numval  { $$ = $1; }
+      | numval '/' numval  { $$ = $1; }
+      | '(' numval ')'     { $$ = $2; }
       | NUM
-      | VAR			{ $$ = $1.value; }
+      | VAR            { $$ = $1.value; }
       ;
 
-list: '[' listval ']' 		{ $$ = 0; }
+list: '[' listval ']'         { $$ = 0; }
     ;
 
 listval: numval ',' listval
@@ -70,9 +74,10 @@ if: IF cond THEN code ENDIF
   | IF cond THEN code ELSE code ENDIF
   ;
 
-cond: '(' cond OPB cond ')'
+cond: cond OPB cond
     | '(' cond ')'
-    | NUM 
+    | NUM
+    | VAR
     ;
 %%
 #include "lex.yy.c"

@@ -1,35 +1,33 @@
 %option noyywrap yylineno
-num 		[0-9]+
-str		"([^"\\]|\\"|\\.)*"		
-var		[a-z][a-z0-9]*
-opn 		[+-/*]     
-opb		>>|<<|>=|<=|==|!=
+num        [0-9]+
+str        \"([^"]|\\\"|\\.)*\"
+var        [a-z][a-z0-9]*
+opn        [+-/*]
+opb        >>|<<|>=|<=|==|!=
 
 %%
+{str}      { yylval.s = strdup(yytext); return STR; }
+{num}      { yylval.i = atoi(yytext); return NUM; }
+{var}      { yylval.s = strdup(yytext); return VAR; }
+DECLARE    { return DECLARE; }
+BEGIN      { return BEGN; }
+END        { return END; }
+INT        { return INT; }
+ARRAY      { return ARRAY; }
+PRINT      { return PRINT; }
+READ       { return READ; }
+FOR        { return FOR; }
+IN         { return IN; }
+TO         { return TO; }
+STEP       { return STEP; }
+ENDFOR     { return ENDFOR; }
+IF         { return IF; }
+THEN       { return THEN; }
+ELSE       { return ELSE; }
+ENDIF      { return ENDIF; }
 
-{str}		{ yylval.s = strdup(yytext); return STR; }
-{num}		{ yylval.i = atoi(yytext); return NUM; } 
-{var}      	{ yylval.s = strdup(yytext); return VAR; }
-DECLARE		{ return DECLARE; }
-BEGIN		{ return BEGN; }
-END		{ return END; }
-INT		{ return INT; }
-ARRAY		{ return ARRAY; }
-PRINT		{ return PRINT; }
-READ		{ return READ; }
-FOR		{ return FOR; }
-IN		{ return IN; }
-TO		{ return TO; }
-STEP		{ return STEP; }
-ENDFOR		{ return ENDFOR; }
-IF		{ return IF; }
-THEN		{ return THEN; }
-ELSE		{ return ELSE; }
-ENDIF		{ return ENDIF; }
-
-[<>]|==|<=|>=|!=	{}
-[=\[\]\(\),]	{ return yytext[0]; }
-[ \n\t]   	{ }
-.*       	{ }
+[<>]|==|<=|>=|!=   { yylval.s = strdup(yytext); return OPB; }
+[=\[\]\(\),]       { return yytext[0]; }
+.|\n|\t|\          { }
 %%
 
