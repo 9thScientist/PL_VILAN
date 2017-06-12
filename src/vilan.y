@@ -12,7 +12,6 @@ CONTEXT c;
 %token DECLARE BEGN END INTT ARR PRINT ERROR READ FOR IN TO STEP ENDFOR IF THEN ELSE ENDIF NUM STR VAR OPB OPA OPM
 %union {
     char* s; int i;
-    struct { char* code; int val; } val;
     struct { char* init_code; char* end_code; } forc;
 }
 %type <s> STR
@@ -23,7 +22,6 @@ CONTEXT c;
 %type <s> factor
 %type <s> OPM
 %type <s> OPA
-//%type <i> list
 %type <s> OPB
 %type <s> vilan
 %type <s> dec
@@ -37,8 +35,6 @@ CONTEXT c;
 %type <s> iff
 %type <s> cond
 
-//%left '*' '+' '-' '/'
-%left OPB
 %%
 vilan: DECLARE dec BEGN code END { fprintf(stdout, "%sstart\n%s", $2, $4); printf ("Done.\n"); }
      ;
@@ -66,7 +62,6 @@ statament: assign                  { asprintf(&$$, "%s", $1); }
     ;
 
 assign: VAR '=' numval                { $$ = assign(c, $1, $3); }
-//      | VAR '=' list                { $$ = $1.value; }
       | VAR '=' READ                  { $$ = read_var(c, $1); }
       | VAR '[' numval ']' '=' READ   { $$ = read_array(c, $1, $3); }
       | VAR '[' numval ']' '=' numval { asprintf(&$$, "%s%s\tloadn\n",
@@ -87,15 +82,6 @@ factor: VAR                 { $$ = push_var(c, $1); }
       | '(' numval ')'      { $$ = $2; }
       ;
 
-/*
-list: '[' listval ']'      { $$ = 0; }
-    ;
-
-listval: numval ',' listval
-       | numval
-       |
-       ;
-*/
 ffor: initfor code ENDFOR { $$ = for_code(c, $1.init_code, $2, $1.end_code);}
     ;
 
@@ -113,10 +99,8 @@ iff: IF cond THEN code ENDIF             { $$ = if_then_else(c, $2, $4, ""); }
    | IF cond THEN code ELSE code ENDIF   { $$ = if_then_else(c, $2, $4, $6); }
    ;
 
-cond: cond OPB cond     { asprintf(&$$, "%s%s%s", $3, $1, operator($2)); }
-    | '(' cond ')'      { $$ = $2; }
-    | NUM               { asprintf(&$$, "pushi %d", $1); }
-    | VAR               { asprintf(&$$, "%s", push_var(c, $1)); }
+cond: numval              { $$ = $1; }
+    | numval OPB numval   { asprintf(&$$, "%s%s%s", $3, $1, operator($2)); }
     ;
 %%
 #include "lex.yy.c"
