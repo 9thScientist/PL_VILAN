@@ -165,12 +165,14 @@ char* for_code(CONTEXT c, char* init_for, char* code, char* end_for) {
     return g_string_free(str, FALSE);
 }
 
-char* init_for_in(CONTEXT c, char* var_name) {
-    GString *str = g_string_new(NULL);
+char* init_for_in(CONTEXT c, char* var_name, int value) {
+    GString *str = g_string_new(NULL), *aux = g_string_new(NULL);
     c->label++;
 
     g_string_append_printf(str, "c%d:nop\n", c->label);
-    g_string_append_printf(str, "%s", assign(c, var_name, "\tpushi 0\n"));
+    aux = g_string_append_printf(aux, "\tpushi %d\n", value);
+    g_string_append_printf(str, "%s", assign(c, var_name, aux));
+    g_string_free(aux, TRUE);
 
     return g_string_free(str, FALSE);
 }

@@ -97,10 +97,12 @@ factor: VAR                 { $$ = push_var(c, $1); }
 ffor: initfor code ENDFOR { $$ = for_code(c, $1.init_code, $2, $1.end_code);}
     ;
 
-initfor: FOR VAR IN VAR steps     { $$.init_code = init_for_in(c, $2);
-                                    $$.end_code = end_for_in(c, $2, $4, $5);}
-       | FOR VAR TO numval steps  { $$.init_code = init_for_in(c, $2);
+initfor: FOR VAR IN VAR steps  { $$.init_code = init_for_in(c, $2, 0);
+                                 $$.end_code = end_for_in(c, $2, $4, $5); }
+       | FOR VAR TO numval steps  { $$.init_code = init_for_in(c, $2, 0);
                                     $$.end_code = end_for_to(c, $2, $4, $5);}
+       | FOR VAR '=' NUM TO numval steps  {$$.init_code = init_for_in(c, $2,$4);
+                                       $$.end_code = end_for_to(c, $2, $6, $7);}
        ;
 
 steps: STEP numval   { $$ = $2; }
