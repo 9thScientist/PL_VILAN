@@ -1,13 +1,13 @@
 DECLARE
-	INT i
-	INT soma
-	ARRAY 5 v
+  	INT i
+  	INT soma
+  	ARRAY 5 v
 BEGIN
-	FOR i IN v
-		v[i] = READ
-		soma = soma + v[i]
-	ENDFOR
+	  FOR i IN v
+		    v[i] = READ
+		    soma = soma + v[i]
+	  ENDFOR
 
-	PRINT "A soma da lista e: "
-	PRINT soma
+	  PRINT "A soma da lista e: "
+	  PRINT soma
 END

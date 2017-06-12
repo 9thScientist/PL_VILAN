@@ -48,11 +48,13 @@ char* declare_array(CONTEXT c, char* arr_name, int size) {
     GString *str = g_string_new(NULL);
     Variable var;
 
-    var = initArray(arr_name, size, c->gp++);
+    var = initArray(arr_name, size, c->gp);
     g_tree_insert(c->vars, var->name, var);
 
     g_string_append_printf(str, "\tpushi 0\n");
     g_string_append_printf(str, "\tpushn %d\n", size);
+
+    c->gp += size;
 
     return g_string_free(str, FALSE);
 }

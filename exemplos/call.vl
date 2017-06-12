@@ -1,0 +1,14 @@
+DECLARE
+    INT x
+    INT y
+    INT res
+PROCEDURE soma
+    res = x + y
+ENDPROCEDURE
+
+BEGIN
+    x = READ
+    y = READ
+    GOTO soma
+    PRINT res
+END

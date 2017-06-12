@@ -3,14 +3,18 @@ num        [0-9]+
 str        \"([^"]|\\\"|\\.)*\"
 var        [a-z][a-z0-9]*
 opn        [+-/*]
-opb        >>|<<|>=|<=|==|!=
-
+opA        "+"|"-"|"||"
+opM        "&&"|"*"|"/"
+opB        ">>"|"<<"|">="|"<="|"=="|"|=|"
 %%
 {str}      { yylval.s = strdup(yytext); return STR; }
 {num}      { yylval.i = atoi(yytext); return NUM; }
 {var}      { yylval.s = strdup(yytext); return VAR; }
 DECLARE    { return DECLARE; }
 BEGIN      { return BEGN; }
+PROCEDURE  { return PROCEDURE; }
+ENDPROC    { return ENDPROC; }
+GOTO       { return GOTO; }
 END        { return END; }
 INT        { return INTT; }
 ARRAY      { return ARR; }
@@ -27,7 +31,10 @@ ELSE       { return ELSE; }
 ENDIF      { return ENDIF; }
 #.*        { }
 
-[<>]|==|<=|>=|!=   { yylval.s = strdup(yytext); return OPB; }
+{opA}			 { yylval.s = strdup(yytext); return OPA; }
+{opM}			 { yylval.s = strdup(yytext); return OPM; }
+{opB}			 { yylval.s = strdup(yytext); return OPB; }
+
 [=\[\]\(\),]       { return yytext[0]; }
 .|\n|\t|\          { }
 %%
