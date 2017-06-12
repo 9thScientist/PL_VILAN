@@ -25,6 +25,7 @@ IF         { return IF; }
 THEN       { return THEN; }
 ELSE       { return ELSE; }
 ENDIF      { return ENDIF; }
+#.*        { }
 
 [<>]|==|<=|>=|!=   { yylval.s = strdup(yytext); return OPB; }
 [=\[\]\(\),]       { return yytext[0]; }
