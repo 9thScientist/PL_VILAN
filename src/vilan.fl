@@ -12,8 +12,8 @@ opb        >>|<<|>=|<=|==|!=
 DECLARE    { return DECLARE; }
 BEGIN      { return BEGN; }
 END        { return END; }
-INT        { return INT; }
-ARRAY      { return ARRAY; }
+INT        { return INTT; }
+ARRAY      { return ARR; }
 PRINT      { return PRINT; }
 READ       { return READ; }
 FOR        { return FOR; }

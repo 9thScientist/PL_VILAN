@@ -9,7 +9,7 @@ int yylex();
 
 CONTEXT c;
 %}
-%token DECLARE BEGN END INTT ARR PRINT ERROR READ FOR IN TO STEP ENDFOR IF THEN ELSE ENDIF NUM STR VAR OPB
+%token DECLARE BEGN END INTT ARR PRINT ERROR READ FOR IN TO STEP ENDFOR IF THEN ELSE ENDIF NUM STR VAR OPB OPA OPM
 %union {
     char* s; int i;
     struct { char* code; int val; } val;
@@ -19,12 +19,17 @@ CONTEXT c;
 %type <s> VAR
 %type <i> NUM
 %type <s> numval
+%type <s> term
+%type <s> factor
+%type <s> OPM
+%type <s> OPA
 //%type <i> list
 %type <s> OPB
 %type <s> vilan
 %type <s> dec
 %type <s> initvar
 %type <s> code
+%type <s> statament
 %type <s> assign
 %type <s> ffor
 %type <forc> initfor
@@ -32,10 +37,10 @@ CONTEXT c;
 %type <s> iff
 %type <s> cond
 
-%left '*' '+' '-' '/'
+//%left '*' '+' '-' '/'
 %left OPB
 %%
-vilan: DECLARE dec BEGN code END { asprintf(&$$, "%sstart\n%s", $2, $4); printf ("Done.\n"); }
+vilan: DECLARE dec BEGN code END { fprintf(stdout, "%sstart\n%s", $2, $4); printf ("Done.\n"); }
      ;
 
 dec: initvar dec              { asprintf(&$$, "%s%s", $1, $2); }
@@ -47,28 +52,41 @@ initvar: INTT VAR              { $$ = declare_int(c, $2, "\tpushi 0\n"); }
        | ARR NUM VAR         { $$ = declare_array(c, $3, $2); }
        ;
 
-code: assign code             { asprintf(&$$, "%s%s", $1, $2); }
-    | ffor code               { asprintf(&$$, "%s%s", $1, $2); }
-    | iff code                { asprintf(&$$, "%s%s", $1, $2); }
-    | PRINT STR code          { asprintf(&$$, "%s%s", print_str($2), $3); }
-    | PRINT numval code       { asprintf(&$$, "%s%s", print_num(), $3); }
-    | ERROR STR code          { asprintf(&$$, "%s%S", error($2), $3); }
-    |                         { $$ = strdup(""); }
+code :                { $$ = "";}
+     | statament code { asprintf(&$$, "%s%s", $1, $2); }
+     ;
+
+
+statament: assign                  { asprintf(&$$, "%s", $1); }
+         | ffor                   { asprintf(&$$, "%s", $1); }
+         | iff                  { asprintf(&$$, "%s", $1); }
+         | PRINT STR { asprintf(&$$, "%s", print_str($2)); }
+         | PRINT numval { asprintf(&$$, "%s%s", $2, print_num()); }
+         | ERROR STR { asprintf(&$$, "%s", error($2)); }
     ;
 
-assign: VAR '=' numval      { $$ = assign(c, $1, $3); }
-//      | VAR '=' list          { $$ = $1.value; }
-      | VAR '=' READ        { $$ = read_var(c, $1); }
+assign: VAR '=' numval                { $$ = assign(c, $1, $3); }
+//      | VAR '=' list                { $$ = $1.value; }
+      | VAR '=' READ                  { $$ = read_var(c, $1); }
+      | VAR '[' numval ']' '=' READ   { $$ = read_array(c, $1, $3); }
+      | VAR '[' numval ']' '=' numval { asprintf(&$$, "%s%s\tloadn\n",
+                                              push_array(c, $1, $3), $6); }
       ;
 
-numval: numval '+' numval  { asprintf(&$$, "%s%sadd\n", $3, $1); }
-      | numval '-' numval  { asprintf(&$$, "%s%ssub\n", $3, $1); }
-      | numval '*' numval  { asprintf(&$$, "%s%smul\n", $3, $1); }
-      | numval '/' numval  { asprintf(&$$, "%s%sdiv\n", $3, $1); }
-      | '(' numval ')'     { $$ = $2; }
-      | NUM                { asprintf(&$$, "\tpushi %d\n", $1); }
-      | VAR                { $$ = push_var(c, $1); }
+numval: term                { $$ = $1; }
+      | numval OPA term     { $$ = operatorA($1, $2, $3); }
       ;
+
+term: factor                { $$ = $1; }
+    | term OPM factor       { $$ = operatorM($1, $2, $3); }
+    ;
+
+factor: VAR                 { $$ = push_var(c, $1); }
+      | NUM                 { asprintf(&$$, "\tpushi %d\n", $1); }
+      | VAR '[' numval ']'  { asprintf(&$$, "%s\tloadn\n", push_array(c, $1, $3)); }
+      | '(' numval ')'      { $$ = $2; }
+      ;
+
 /*
 list: '[' listval ']'      { $$ = 0; }
     ;

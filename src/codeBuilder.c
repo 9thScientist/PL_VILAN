@@ -90,6 +90,28 @@ char* read_var(CONTEXT c, char* var_name) {
     return g_string_free(str, FALSE);
 }
 
+char* read_array(CONTEXT c, char* arr_name, char* index) {
+    GString *str = g_string_new(NULL);
+    Variable arr = get_var(c, arr_name);
+
+    g_string_append_printf(str, "%s", push_array(c, arr_name, index));
+    g_string_append_printf(str, "\tread\n");
+    g_string_append_printf(str, "\tstoren\n");
+
+    return g_string_free(str, FALSE);
+}
+
+char* push_array(CONTEXT c, char* arr_name, char* index) {
+    GString *str = g_string_new(NULL);
+    Variable arr = get_var(c, arr_name);
+
+    g_string_append_printf(str, "\tpushgp\n");
+    g_string_append_printf(str, "%s", push_var(c, arr_name));
+    g_string_append_printf(str, "\tpadd\n\t%s", index);
+
+    return g_string_free(str, FALSE);
+}
+
 char* push_var(CONTEXT c, char* var_name) {
     GString *str = g_string_new(NULL);
     Variable var = get_var(c, var_name);
@@ -191,6 +213,47 @@ char* end_for_to(CONTEXT c, char* iter_name, char* stop, char* steps) {
 
     return g_string_free(str, FALSE);
 }
+
+// Arithmetic opeator
+char* operatorA(char* left, char* op, char* right) {
+    GString *str = g_string_new(NULL);
+
+    g_string_append_printf(str, "%s", left);
+    g_string_append_printf(str, "%s", right);
+
+    if (!strcmp(op, "+"))
+        g_string_append_printf(str, "\tadd\n");
+    else if (!strcmp(op, "-"))
+        g_string_append_printf(str, "\tsub\n");
+    else if (!strcmp(op, "||"))
+        g_string_append_printf(str, "\tadd\n");
+    else
+        NULL;
+
+
+    return g_string_free(str, FALSE);
+}
+
+// Multiplicative opeator
+char* operatorM(char* left, char* op, char* right) {
+    GString *str = g_string_new(NULL);
+
+    g_string_append_printf(str, "%s", left);
+    g_string_append_printf(str, "%s", right);
+
+    if (!strcmp(op, "*"))
+        g_string_append_printf(str, "\tmul\n");
+    else if (!strcmp(op, "/"))
+        g_string_append_printf(str, "\tdiv\n");
+    else if (!strcmp(op, "&&"))
+        g_string_append_printf(str, "\tmul\n");
+    else
+        NULL;
+
+    return g_string_free(str, FALSE);
+}
+
+
 
 char* operator(char *op) {
     GString *str = g_string_new(NULL);
