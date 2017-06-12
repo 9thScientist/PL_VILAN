@@ -81,11 +81,11 @@ assign: VAR '=' numval                { $$ = assign(c, $1, $3); }
       ;
 
 numval: term                { $$ = $1; }
-      | numval OPA term     { $$ = operatorA($1, $2, $3); }
+      | numval OPA term     { $$ = operatorA(c, $1, $2, $3); }
       ;
 
 term: factor                { $$ = $1; }
-    | term OPM factor       { $$ = operatorM($1, $2, $3); }
+    | term OPM factor       { $$ = operatorM(c, $1, $2, $3); }
     ;
 
 factor: VAR                 { $$ = push_var(c, $1); }
@@ -114,7 +114,8 @@ iff: IF cond THEN code ENDIF             { $$ = if_then_else(c, $2, $4, ""); }
    ;
 
 cond: numval              { $$ = $1; }
-    | numval OPB numval   { asprintf(&$$, "%s%s%s", $3, $1, operator($2)); }
+    | numval OPB numval   { asprintf(&$$, "%s%s%s", $3, $1, operator(c, $2)); }
+    | '(' cond ')'        { $$ = $2; }
     ;
 %%
 #include "lex.yy.c"

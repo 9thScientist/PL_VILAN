@@ -7,8 +7,7 @@ BEGIN
 	PRINT "Introduza um numero inteiro: "
 	y = READ
 
-	// Calcula qual o maior valor
-	IF x > y THEN
+  IF x > y THEN
 		PRINT "O maior e: "
 		PRINT x
 	ELSE

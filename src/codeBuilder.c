@@ -227,7 +227,7 @@ char* end_for_to(CONTEXT c, char* iter_name, char* stop, char* steps) {
 }
 
 // Arithmetic opeator
-char* operatorA(char* left, char* op, char* right) {
+char* operatorA(CONTEXT c, char* left, char* op, char* right) {
     GString *str = g_string_new(NULL);
 
     g_string_append_printf(str, "%s", left);
@@ -240,14 +240,14 @@ char* operatorA(char* left, char* op, char* right) {
     else if (!strcmp(op, "||"))
         g_string_append_printf(str, "\tadd\n");
     else
-        NULL;
+        c->cerror("Operador não reconhecido");
 
 
     return g_string_free(str, FALSE);
 }
 
 // Multiplicative opeator
-char* operatorM(char* left, char* op, char* right) {
+char* operatorM(CONTEXT c, char* left, char* op, char* right) {
     GString *str = g_string_new(NULL);
 
     g_string_append_printf(str, "%s", left);
@@ -259,15 +259,17 @@ char* operatorM(char* left, char* op, char* right) {
         g_string_append_printf(str, "\tdiv\n");
     else if (!strcmp(op, "&&"))
         g_string_append_printf(str, "\tmul\n");
+    else if (!strcmp(op, "%"))
+        g_string_append_printf(str, "\tmod\n");
     else
-        NULL;
+        c->cerror("Operador não reconhecido");
 
     return g_string_free(str, FALSE);
 }
 
 
 
-char* operator(char *op) {
+char* operator(CONTEXT c, char *op) {
     GString *str = g_string_new(NULL);
 
     if (!strcmp(op, ">")) {
@@ -279,7 +281,7 @@ char* operator(char *op) {
     } else if (!strcmp(op, "<=")) {
         g_string_append_printf(str, "\tinfeq\n");
     } else {
-        return NULL;
+        c->cerror("Operador não reconhecido");
     }
 
     return g_string_free(str, FALSE);
