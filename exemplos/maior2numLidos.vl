@@ -8,11 +8,11 @@ BEGIN
 	y = READ
 
 	// Calcula qual o maior valor
-	IF y > x THEN
-		PRINT "O maior e: "
-		PRINT y
-	ELSE
+	IF x > y THEN
 		PRINT "O maior e: "
 		PRINT x
+	ELSE
+		PRINT "O maior e: "
+		PRINT y
 	ENDIF
 END
