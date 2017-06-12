@@ -4,7 +4,7 @@
 
 typedef struct context *CONTEXT;
 
-CONTEXT new_context();
+CONTEXT new_context(void (*cerror) (char*));
 int exists_var(CONTEXT c, char *var);
 Variable get_var(CONTEXT c, char *var_name);
 char* declare_int(CONTEXT c, char* var_name, char* value);

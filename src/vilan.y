@@ -40,7 +40,7 @@ CONTEXT c;
 
 %%
 vilan: DECLARE dec procs BEGN code END { fprintf(stdout, "%s%sstart\n%s", $2,
-                                                  $3, $5); printf ("Done.\n"); }
+                                                  $3, $5); }
      ;
 
 dec: initvar dec              { asprintf(&$$, "%s%s", $1, $2); }
@@ -124,8 +124,18 @@ void yyerror (char *s) {
 }
 
 int main(int argc, char* argv[]) {
-    c = new_context();
+    int i;
+    c = new_context(yyerror);
+/*
+    if(argc >= 2) {
+        yyin = fopen(argv[1], "r");
 
+        for(i = 0; i < argc; i++) {
+            if (!strcmp(argv[i], "-o"))
+                yyout = fopen(argv[++i], "w");
+        }
+    }
+*/
     yyparse();
 
     return 0;

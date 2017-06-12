@@ -8,15 +8,17 @@ struct context {
     GTree* vars;
     int gp;
     int label;
+    void (*cerror) (char*);
 };
 
 // Starts a new context
-CONTEXT new_context() {
+CONTEXT new_context(void (*cerror) (char*)) {
     CONTEXT c = malloc(sizeof(struct context));
 
     c->vars = g_tree_new((GCompareFunc) strcmp);
     c->gp = 0;
     c->label = 0;
+    c->cerror = cerror;
 
     return c;
 }
@@ -51,7 +53,6 @@ char* declare_array(CONTEXT c, char* arr_name, int size) {
     var = initArray(arr_name, size, c->gp);
     g_tree_insert(c->vars, var->name, var);
 
-    g_string_append_printf(str, "\tpushi 0\n");
     g_string_append_printf(str, "\tpushn %d\n", size);
 
     c->gp += size;
@@ -66,6 +67,8 @@ char* assign(CONTEXT c, char *var_name, char *value) {
     Variable var = get_var(c, var_name);
 
     if (var == NULL) {
+        g_string_append_printf(str, "Variable %s not declared.", var_name);
+        c->cerror(g_string_free(str, FALSE));
         return NULL;
     }
 
@@ -98,6 +101,7 @@ char* read_array(CONTEXT c, char* arr_name, char* index) {
 
     g_string_append_printf(str, "%s", push_array(c, arr_name, index));
     g_string_append_printf(str, "\tread\n");
+    g_string_append_printf(str, "\tatoi\n");
     g_string_append_printf(str, "\tstoren\n");
 
     return g_string_free(str, FALSE);
@@ -108,8 +112,8 @@ char* push_array(CONTEXT c, char* arr_name, char* index) {
     Variable arr = get_var(c, arr_name);
 
     g_string_append_printf(str, "\tpushgp\n");
-    g_string_append_printf(str, "%s", push_var(c, arr_name));
-    g_string_append_printf(str, "\tpadd\n\t%s", index);
+    g_string_append_printf(str, "\tpushi %d\n", arr->position);
+    g_string_append_printf(str, "\tpadd\n%s", index);
 
     return g_string_free(str, FALSE);
 }
@@ -119,6 +123,8 @@ char* push_var(CONTEXT c, char* var_name) {
     Variable var = get_var(c, var_name);
 
     if (var == NULL) {
+        g_string_append_printf(str, "Variable %s not declared.", var_name);
+        c->cerror(g_string_free(str, FALSE));
         return NULL;
     }
 
@@ -167,12 +173,13 @@ char* for_code(CONTEXT c, char* init_for, char* code, char* end_for) {
 
 char* init_for_in(CONTEXT c, char* var_name, int value) {
     GString *str = g_string_new(NULL), *aux = g_string_new(NULL);
+    char *asg;
     c->label++;
 
+    g_string_append_printf(aux, "\tpushi %d\n", value);
+    asg = assign(c, var_name, g_string_free(aux, FALSE));
+    g_string_append_printf(str, "%s", asg);
     g_string_append_printf(str, "c%d:nop\n", c->label);
-    aux = g_string_append_printf(aux, "\tpushi %d\n", value);
-    g_string_append_printf(str, "%s", assign(c, var_name, aux));
-    g_string_free(aux, TRUE);
 
     return g_string_free(str, FALSE);
 }
@@ -184,16 +191,17 @@ char* end_for_in(CONTEXT c, char* iter_name, char* arr_name, char* steps) {
 
     //Increments iterator ( i += steps )
     aux = push_var(c, iter_name);
+
     g_string_append_printf(str, "%s", aux);
     g_string_append_printf(str, "%s", steps);
-    g_string_append_printf(str, "\tadd\n%s", store_var(c, arr_name));
+    g_string_append_printf(str, "\tadd\n%s", store_var(c, iter_name));
     free(aux);
 
     //Checks whether to break of the loop or not
     aux = push_var(c, iter_name);
     g_string_append_printf(str, "%s", aux);
     g_string_append_printf(str, "\tpushi %d\n", arr->size);
-    g_string_append_printf(str, "\tequal\njz c%d\n", c->label);
+    g_string_append_printf(str, "\tsupeq\n\tjz c%d\n", c->label);
 
     return g_string_free(str, FALSE);
 }
@@ -212,8 +220,8 @@ char* end_for_to(CONTEXT c, char* iter_name, char* stop, char* steps) {
     //Checks whether to break of the loop or not
     aux = push_var(c, iter_name);
     g_string_append_printf(str, "%s", aux);
-    g_string_append_printf(str, "%d", stop);
-    g_string_append_printf(str, "\tequal\njz c%d\n", c->label);
+    g_string_append_printf(str, "%s", stop);
+    g_string_append_printf(str, "\tsupeq\njz c%d\n", c->label);
 
     return g_string_free(str, FALSE);
 }

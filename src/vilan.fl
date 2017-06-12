@@ -1,5 +1,4 @@
 %option noyywrap yylineno
-%x DEC COD
 num        [0-9]+
 str        \"([^"]|\\\"|\\.)*\"
 var        [a-z][a-z0-9]*
@@ -11,29 +10,25 @@ opB        ">>"|"<<"|">="|"<="|"=="|"|=|"
 {str}      { yylval.s = strdup(yytext); return STR; }
 {num}      { yylval.i = atoi(yytext); return NUM; }
 {var}      { yylval.s = strdup(yytext); return VAR; }
-DECLARE    { BEGIN DEC; return DECLARE; }
-<DEC>BEGIN      { BEGIN COD; return BEGN; }
-<COD>BEGIN      { yyerror("BEGIN block must follow DECLARE."); return BEGN; }
-<DEC>PROCEDURE  { BEGIN COD; return PROCEDURE; }
-<COD>PROCEDURE  { yyerror("PROCEDURE block must be inside DECLARE.");
-                  return PROCEDURE; }
-<COD>ENDPROC    { BEGIN DEC; return ENDPROC; }
-<DEC>ENDPROC    { yyerror("ENDPROC must follow a PROCEDURE"); return ENDPROC; }
-<COD>GOTO       { return GOTO; }
-<COD>END        { return END; }
-<DEC>INT        { return INTT; }
-<DEC>ARRAY      { return ARR; }
-<COD>PRINT      { return PRINT; }
-<COD>READ       { return READ; }
-<COD>FOR        { return FOR; }
-<COD>IN         { return IN; }
-<COD>TO         { return TO; }
-<COD>STEP       { return STEP; }
-<COD>ENDFOR     { return ENDFOR; }
-<COD>IF         { return IF; }
-<COD>THEN       { return THEN; }
-<COD>ELSE       { return ELSE; }
-<COD>ENDIF      { return ENDIF; }
+DECLARE    { return DECLARE; }
+BEGIN      { return BEGN; }
+PROCEDURE  { return PROCEDURE; }
+ENDPROC    { return ENDPROC; }
+GOTO       { return GOTO; }
+END        { return END; }
+INT        { return INTT; }
+ARRAY      { return ARR; }
+PRINT      { return PRINT; }
+READ       { return READ; }
+FOR        { return FOR; }
+IN         { return IN; }
+TO         { return TO; }
+STEP       { return STEP; }
+ENDFOR     { return ENDFOR; }
+IF         { return IF; }
+THEN       { return THEN; }
+ELSE       { return ELSE; }
+ENDIF      { return ENDIF; }
 #.*             { }
 
 {opA}			 { yylval.s = strdup(yytext); return OPA; }

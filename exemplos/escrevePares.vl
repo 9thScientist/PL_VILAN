@@ -1,12 +1,12 @@
 DECLARE
-	INT i
+  INT i
 	INT n
 BEGIN
 	PRINT "Parar em que número? "
 	n = READ
 	PRINT "\n"
 
-	FOR i TO n STEP 2
+	FOR i = 1 TO n STEP 2
 		PRINT i
 		PRINT "\n"
 	ENDFOR
