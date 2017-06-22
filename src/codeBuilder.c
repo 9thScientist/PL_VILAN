@@ -151,9 +151,9 @@ char* if_then_else(CONTEXT c, char* cond, char* then_code, char* else_code) {
     c->label++;
 
     g_string_append_printf(str, "%s", cond);
-    g_string_append_printf(str, "\tjz t%d", c->label);
+    g_string_append_printf(str, "\tjz\nt%d:", c->label);
     g_string_append_printf(str, "%s", else_code);
-    g_string_append_printf(str, "\tjump f%d", c->label);
+    g_string_append_printf(str, "\tjump f%d\n", c->label);
     g_string_append_printf(str, "t%d:nop\n%s", c->label, then_code, c->label);
     g_string_append_printf(str, "f%d:nop\n", c->label);
 
@@ -179,7 +179,7 @@ char* init_for_in(CONTEXT c, char* var_name, int value) {
     g_string_append_printf(aux, "\tpushi %d\n", value);
     asg = assign(c, var_name, g_string_free(aux, FALSE));
     g_string_append_printf(str, "%s", asg);
-    g_string_append_printf(str, "c%d:nop\n", c->label);
+    g_string_append_printf(str, "c%d:", c->label);
 
     return g_string_free(str, FALSE);
 }

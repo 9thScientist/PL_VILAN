@@ -39,12 +39,12 @@ CONTEXT c;
 %type <s> proc
 
 %%
-vilan: DECLARE dec procs BEGN code END { fprintf(stdout, "%s%sstart\n%s", $2,
+vilan: DECLARE dec procs BEGN code END { fprintf(stdout, "%sstart\n%sbegin:%s\tstop\n", $2,
                                                   $3, $5); }
      ;
 
 dec: initvar dec              { asprintf(&$$, "%s%s", $1, $2); }
-   |                          { $$ = strdup(""); }
+   |                          { $$ = ""; }
    ;
 
 initvar: INTT VAR              { $$ = declare_int(c, $2, "\tpushi 0\n"); }
@@ -52,11 +52,11 @@ initvar: INTT VAR              { $$ = declare_int(c, $2, "\tpushi 0\n"); }
        | ARR NUM VAR           { $$ = declare_array(c, $3, $2); }
        ;
 
-procs: proc procs    { asprintf(&$$, "%s%s", $1, $2); }
+procs: proc procs    { asprintf(&$$, "\tjump begin\n%s%s", $1, $2); }
      |               { $$ = ""; }
      ;
 
-proc: PROCEDURE VAR code ENDPROC { asprintf(&$$, "%s:nop\n%s", $2, $3 ); }
+proc: PROCEDURE VAR code ENDPROC { asprintf(&$$, "%s:\tnop\n%s\treturn\n", $2, $3 ); }
     ;
 
 code :                { $$ = ""; }

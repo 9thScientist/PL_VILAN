@@ -5,7 +5,7 @@ var        [a-z][a-zA-Z0-9_]*
 opn        [+-/*]
 opA        "+"|"-"|"||"
 opM        "&&"|"*"|"/"|"%"
-opB        ">>"|"<<"|">="|"<="|"=="|"|=|"
+opB        ">"|"<"|">="|"<="|"=="|"!="
 %%
 {str}      { yylval.s = strdup(yytext); return STR; }
 {num}      { yylval.i = atoi(yytext); return NUM; }
